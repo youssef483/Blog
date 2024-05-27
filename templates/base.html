@@ -1,0 +1,201 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}"> <!-- https://fontawesome.com/ -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+    <!-- https://fonts.google.com/ -->
+    <link href="{% static 'css/blog.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <header class="tm-header" id="tm-header">
+        <div class="tm-header-wrapper">
+            <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div style="margin: 2px;">
+                <a href="{% if request.user.profile.id %}{% url 'profile' request.user.profile.id %} {% else %} {% endif %}" class="tm-profile-link">
+                    <img src="{% if request.user.profile.img %}{{request.user.profile.img.url}} {% else %} {% static 'img/default.png' %}  {% endif %}" height="100" width="100" alt="" style="border-radius: 30%; object-fit: cover;">
+                    
+                    <span class="tm-profile-name">{{request.user.profile.name|title}}</span><br>
+                </a>                               
+            </div> 
+            <nav class="tm-nav" id="tm-nav">
+                <ul>
+                    {% if '/home/' == request.path %}
+                        <li class="tm-nav-item active"><a href="{% url 'home' %}" class="tm-nav-link">
+                                <i class="fas fa-home"></i>
+                                Blog Home
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="tm-nav-item"><a href="{% url 'home' %}" class="tm-nav-link">
+                                <i class="fas fa-home"></i>
+                                Blog Home
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if 'add' in request.path %}
+                        <li class="tm-nav-item active"><a href="{% url 'add_post' %}" class="tm-nav-link">
+                                <i class="fas fa-pen"></i>
+                                Add Post
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="tm-nav-item"><a href="{% url 'add_post' %}" class="tm-nav-link">
+                                <i class="fas fa-pen"></i>
+                                Add Post
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if 'about' in request.path %}
+                        <li class="tm-nav-item active"><a href="{% url 'about' %}" class="tm-nav-link">
+                                <i class="fas fa-users"></i>
+                                About Blog
+                            </a></li>
+                    {% else %}
+                        <li class="tm-nav-item"><a href="{% url 'about' %}" class="tm-nav-link">
+                                <i class="fas fa-users"></i>
+                                About Blog
+                            </a></li>
+                    {% endif %}
+                    {% if 'contact' in request.path %}
+                        <li class="tm-nav-item active"><a href="{% url 'contact' %}" class="tm-nav-link">
+                                <i class="far fa-comments"></i>
+                                Contact Us
+                            </a></li>
+                    {% else %}
+                        <li class="tm-nav-item"><a href="{% url 'contact' %}" class="tm-nav-link">
+                                <i class="far fa-comments"></i>
+                                Contact Us
+                            </a></li>
+                    {% endif %}
+                        {% if user.is_authenticated %}
+                        <li class="tm-nav-item"><a href="{% url 'logout' %}" class="tm-nav-link">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="tm-nav-item"><a href="{% url 'register' %}" class="tm-nav-link">
+                           
+                            Register
+                            </a>
+                        </li>
+                        <li class="tm-nav-item"><a href="{% url 'login' %}" class="tm-nav-link">
+                          
+                            Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+    </header>
+    <div class="container-fluid">
+        <main class="tm-main">
+            <!-- Search form -->
+            <div class="row tm-row">
+                <div class="col-12">
+                    {% if messages %}
+                        {% for msg in messages %}
+                            <div class="alert alert-{{msg.tags}} alert-dismissible fade show" role="alert">
+                                {{msg}}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if request.path == '/home/' %}
+                        <form action="{% url 'home' %}" method="GET" class="form-inline tm-mb-80 tm-search-form">
+                            <input class="form-control tm-search-input" name="search" type="search" placeholder="Search..."
+                                aria-label="Search">
+                            <button class="tm-search-button" type="submit">
+                                <i class="fas fa-search tm-search-icon" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    {% endif %}        
+                     
+                </div>
+                  
+            </div>
+            {% block content %}{% endblock content %}
+            <footer class="row tm-row">
+                <hr class="col-12">
+                <div class="col-md-6 col-12 tm-color-gray">
+                    Design: <a rel="nofollow" target="_parent" href="https://templatemo.com"
+                        class="tm-external-link">TemplateMo</a>
+                </div>
+                <div class="col-md-6 col-12 tm-color-gray tm-copyright">
+                    Copyright 2020 Xtra Blog Company Co. Ltd.
+                </div>
+            </footer>
+        </main>
+    </div>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/blog.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $("#comment-form").hide()
+        });
+
+        $(document).ready(function(){
+            $(".reply-form").hide()
+        });
+        $(document).ready(function(){
+            $(".update-form").hide()
+        });
+        $(document).ready(function(){
+            $(".update-reply").hide()
+        });
+        $(document).ready(function(){
+            $(".reply-reply").hide()
+        });
+
+        $("#show-comment-form").click(function(){
+            $("#comment-form").show()
+          });
+
+        {% for c in comments %}
+            $(".show-reply-form{{c.id}}").click(function(){
+                $(".reply{{c.id}}").show()
+            });
+        {% endfor %}
+
+        {% for c in comments %}
+            $(".show-update-form{{c.id}}").click(function(){
+                $(".update{{c.id}}").show()
+            });
+        {% endfor %}
+
+        {% for r in replies %}
+            $(".show-update-reply{{r.id}}").click(function(){
+                $(".updatereply{{r.id}}").show()
+            });
+        {% endfor %}
+
+        {% for r in replies %}
+            $(".show-reply-reply{{r.id}}").click(function(){
+                $(".replyreply{{r.id}}").show()
+            });
+        {% endfor %}
+
+    </script>
+    <script>
+        setInterval(() => {
+            $('.alert').fadeOut()
+        }, 3000)
+      </script>
+</body>
+
+</html>
